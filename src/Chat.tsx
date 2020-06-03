@@ -2,23 +2,25 @@ import React, {useState} from 'react'
 import chat from 'twilio-chat'
 import './App.css'
 import {Message} from "twilio-chat/lib/message";
+import {Channel} from "twilio-chat/lib/channel";
 
-// class App extends Component {
-let Chat = (token: any) => {
-    // const dispatch = useDispatch();
-    // const text = useSelector((state: Store) => state.channel);
+interface Props {
+    token: any
+    topic: string
+}
+
+let Chat = ({topic, token}: Props) => {
     const [channelName, setChannelName] = useState('');
     const [messages, setMessages] = useState();
     const [channel, setChannel] = useState();
-    const [message, setMessage] = useState()
-
+    const [message, setMessage] = useState('')
 
     return (
         <div>
             <form onSubmit={
                 async (event: React.FormEvent) =>
                     // dispatch(setStore(await foo(token.token.token.toJwt(), event)))
-                    await joinChannel(token.token.token.toJwt(), event)
+                    await joinChannel(token.token.toJwt(), event)
             }>
                 <div>
                     <h1>{channelName}</h1>
@@ -59,17 +61,13 @@ let Chat = (token: any) => {
     async function joinChannel(token: string, event: React.FormEvent) {
         event.preventDefault();
         let chatClient = await chat.create(token);
-        let publicChannelDescriptors = await chatClient.getPublicChannelDescriptors();
 
-        chatClient.on('channelJoined', function (channel) {
-            console.log(channel.friendlyName)
-        })
-        let chan = await publicChannelDescriptors.items[0].getChannel();
-        await chan.join()
-        setChannel(chan)
-        setChannelName(publicChannelDescriptors.items[0].friendlyName)
+        let topicChannel: Channel = await chatClient.getChannelByUniqueName(topic);
+        await topicChannel.join()
+        setChannel(topicChannel)
+        setChannelName(topicChannel.friendlyName)
 
-        const messages = await chan.getMessages()
+        const messages = await topicChannel.getMessages()
         const totalMessages = messages.items.length
         let messagesHtml = messages.items.map((m: Message) => {
             return <div>{m.author}: {m.body}</div>
