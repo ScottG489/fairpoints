@@ -3,27 +3,28 @@ import chat from 'twilio-chat'
 import './App.css'
 import {Message} from "twilio-chat/lib/message";
 import {Channel} from "twilio-chat/lib/channel";
+import {Topic} from "./types";
 
 interface Props {
+    topic: Topic
+    viewpoint: string
     token: any
-    topic: string
 }
 
-let Chat = ({topic, token}: Props) => {
-    const [channelName, setChannelName] = useState('');
-    const [messages, setMessages] = useState();
-    const [channel, setChannel] = useState();
+let Chat = ({topic, viewpoint, token}: Props) => {
+    const [channelName, setChannelName] = useState(topic.name);
+    const [messages, setMessages] = useState<JSX.Element[]>();
+    const [channel, setChannel] = useState<Channel>();
     const [message, setMessage] = useState('')
 
     return (
         <div>
             <form onSubmit={
                 async (event: React.FormEvent) =>
-                    // dispatch(setStore(await foo(token.token.token.toJwt(), event)))
                     await joinChannel(token.token.toJwt(), event)
             }>
                 <div>
-                    <h1>{channelName}</h1>
+                    <h2>Viewpoint: {viewpoint}</h2>
                 </div>
                 {messages}
                 <div className="form-group">
@@ -47,10 +48,10 @@ let Chat = ({topic, token}: Props) => {
     )
     async function sendMessage(event: React.FormEvent) {
         event.preventDefault()
-        await channel.sendMessage(message)
-        const messages = await channel.getMessages()
-        const totalMessages = messages.items.length
-        let messagesHtml = messages.items.map((m: Message) => {
+        await channel?.sendMessage(message)
+        const messages = await channel?.getMessages()
+        const totalMessages = messages?.items.length
+        let messagesHtml = messages?.items.map((m: Message) => {
             return <div>{m.author}: {m.body}</div>
         })
         console.log('Total messages: ' + totalMessages)
@@ -62,7 +63,16 @@ let Chat = ({topic, token}: Props) => {
         event.preventDefault();
         let chatClient = await chat.create(token);
 
-        let topicChannel: Channel = await chatClient.getChannelByUniqueName(topic);
+        try {
+            await chatClient.createChannel({
+                uniqueName: topic.id,
+                friendlyName: topic.name,
+            })
+        } catch (e) {
+            console.log(`Error creating channel: ${e.message}`)
+        }
+
+        let topicChannel: Channel = await chatClient.getChannelByUniqueName(topic.id);
         await topicChannel.join()
         setChannel(topicChannel)
         setChannelName(topicChannel.friendlyName)
@@ -70,7 +80,7 @@ let Chat = ({topic, token}: Props) => {
         const messages = await topicChannel.getMessages()
         const totalMessages = messages.items.length
         let messagesHtml = messages.items.map((m: Message) => {
-            return <div>{m.author}: {m.body}</div>
+            return <div key={m.sid}>{m.author}: {m.body}</div>
         })
         console.log('Total messages: ' + totalMessages)
 
