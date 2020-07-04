@@ -1,17 +1,17 @@
 import React, {useState} from 'react'
-import chat from 'twilio-chat'
 import './App.css'
+import TwilioChat from 'twilio-chat'
 import {Message} from "twilio-chat/lib/message";
 import {Channel} from "twilio-chat/lib/channel";
 import {Topic} from "./types";
 
 interface Props {
+    chatClientToken: string
     topic: Topic
     viewpoint: string
-    token: any
 }
 
-let Chat = ({topic, viewpoint, token}: Props) => {
+let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     const [channelName, setChannelName] = useState(topic.name);
     const [messages, setMessages] = useState<JSX.Element[]>();
     const [channel, setChannel] = useState<Channel>();
@@ -21,7 +21,7 @@ let Chat = ({topic, viewpoint, token}: Props) => {
         <div>
             <form onSubmit={
                 async (event: React.FormEvent) =>
-                    await joinChannel(token.token.toJwt(), event)
+                    await joinChannel(event)
             }>
                 <div>
                     <h2>Viewpoint: {viewpoint}</h2>
@@ -46,6 +46,7 @@ let Chat = ({topic, viewpoint, token}: Props) => {
             </form>
         </div>
     )
+
     async function sendMessage(event: React.FormEvent) {
         event.preventDefault()
         await channel?.sendMessage(message)
@@ -59,9 +60,9 @@ let Chat = ({topic, viewpoint, token}: Props) => {
         setMessages(messagesHtml)
     }
 
-    async function joinChannel(token: string, event: React.FormEvent) {
+    async function joinChannel(event: React.FormEvent) {
         event.preventDefault();
-        let chatClient = await chat.create(token);
+        let chatClient = await TwilioChat.create(chatClientToken);
 
         try {
             await chatClient.createChannel({
@@ -72,7 +73,7 @@ let Chat = ({topic, viewpoint, token}: Props) => {
             console.log(`Error creating channel: ${e.message}`)
         }
 
-        let topicChannel: Channel = await chatClient.getChannelByUniqueName(topic.id);
+        let topicChannel = await chatClient.getChannelByUniqueName(topic.id);
         await topicChannel.join()
         setChannel(topicChannel)
         setChannelName(topicChannel.friendlyName)

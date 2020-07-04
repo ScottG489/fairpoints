@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
-import tokenGenerator from './TokenGenerator'
 import './App.css'
 
+import Login from "./Login";
 import Chat from './Chat'
 import TopicChooser from "./TopicChooser";
 import ViewpointChooser from "./ViewpointChooser";
@@ -13,17 +13,15 @@ const availableTopics: Topic[] = [
 ]
 
 let App = () => {
-  const [userStep, setUserStep] = useState('chooseTopic')
+  const [userStep, setUserStep] = useState('login')
   const [topic, setTopic] = useState<Topic>({id: '', name: ''})
   const [viewpoint, setViewpoint] = useState('')
+  const [chatClientToken, setChatClientToken] = useState('')
 
-  const identity = Math.random().toString(36).substr(2, 5);
-    const deviceId = Math.random().toString(36).substr(2, 5);
-
-    const token = tokenGenerator(identity, deviceId);
-
-    let render
-    if (userStep === 'chooseTopic') {
+  let render
+   if (userStep === "login") {
+       render = <Login setChatClientToken={setChatClientToken} setUserStep={setUserStep}/>
+   } else if (userStep === 'chooseTopic') {
       render = <TopicChooser
           availableTopics={availableTopics}
           setUserStep={setUserStep}
@@ -35,9 +33,9 @@ let App = () => {
     } else if (userStep === 'chat') {
       render = (
           <Chat
+              chatClientToken={chatClientToken}
               topic={topic}
-              viewpoint={viewpoint}
-              token={{token}} />
+              viewpoint={viewpoint} />
       )
     } else {
       render = 'Invalid user step'
