@@ -4,7 +4,8 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = var.tfstate_backend_bucket_name
+    # TODO: Don't want this hardcoded but backends don't allow variables
+    bucket = "tfstate-debatable"
     key    = "app.tfstate"
     region = "us-west-2"
   }
