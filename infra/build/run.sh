@@ -47,4 +47,5 @@ cd "$(git rev-parse --show-toplevel)"
 aws s3 sync build/ s3://$_DOMAIN_NAME
 
 # Acceptance testing. Currently running against prod but once we have multiple environments this will point elsewhere
-npx cypress run
+# TODO: Uncomment this once we have some cypress tests
+#npx cypress run
