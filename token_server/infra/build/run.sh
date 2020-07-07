@@ -32,7 +32,7 @@ ROOT_DIR="$(git rev-parse --show-toplevel)/token_server"
 cd $ROOT_DIR
 
 npm install
-pkg -t node10-linux-x64 token_server/index.js
+pkg -t node10-linux-x64 index.js
 
 docker build -t $DOCKER_IMAGE_NAME .
 docker push $DOCKER_IMAGE_NAME
