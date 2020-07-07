@@ -16,7 +16,7 @@
   - name: Gathering facts
     setup:
 
-  - name: Install packages
+  - name: Install docker
     package:
       name:
         - docker.io
