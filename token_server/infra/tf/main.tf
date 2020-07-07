@@ -12,7 +12,7 @@ terraform {
 
 resource "aws_instance" "server_instance" {
   ami           = "ami-09dd2e08d601bff67"
-  instance_type = "t2.nano"
+  instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.server_sg.id]
   key_name = aws_key_pair.server_key.key_name
 
