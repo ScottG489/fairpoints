@@ -18,7 +18,7 @@ terraform apply --auto-approve
 _INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
 
 cd "$ROOT_DIR/infra/ansible"
-ansible-playbook -vvv -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory $_INVENTORY, master-playbook.yml
+ansible-playbook -vv -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory $_INVENTORY, master-playbook.yml
 
 # TODO: We don't yet have acceptance tests for the token server
 #echo "baseUri=http://${_INVENTORY}:80" > "$(git rev-parse --show-toplevel)/src/test/acceptance/resource/config.properties"
