@@ -3,8 +3,28 @@ name: CI
 on: [push]
 
 jobs:
+  token_server_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and push image which app build runs on
+        run: ./token_server/infra/build/build.sh ${{ secrets.ID_RSA_CONTENTS_BASE64 }} ${{ secrets.DOCKER_CONFIG_CONTENTS_BASE64 }}
+        env:
+          GIT_REPO_URL: 'git@github.com:ScottG489/debatable.git'
+          RELATIVE_SUB_DIR: 'token_server/infra/build'
+          DOCKER_IMAGE_NAME: 'scottg489/debatable-token-server-build:latest'
+
+  token_server_build_application:
+    runs-on: ubuntu-latest
+    needs: token_server_build
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and deploy
+        run: ./token_server/build.sh ${{ secrets.ID_RSA_CONTENTS_BASE64 }} ${{ secrets.AWS_CREDENTIALS_CONTENTS_BASE64 }} ${{ secrets.TWILIO_ACCOUNT_SID_BASE64 }} ${{ secrets.TWILIO_API_KEY_BASE64 }} ${{ secrets.TWILIO_API_SECRET_BASE64 }} ${{ secrets.TWILIO_CHAT_SERVICE_SID_BASE64 }}
+
   build:
     runs-on: ubuntu-latest
+    needs: token_server_build_application
     steps:
     - uses: actions/checkout@v1
     - name: Build and push image which app build runs on

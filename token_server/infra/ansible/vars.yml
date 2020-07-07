@@ -1,0 +1,3 @@
+---
+container_name: debatable-token-server
+image_name: scottg489/depatable-token-server:latest
