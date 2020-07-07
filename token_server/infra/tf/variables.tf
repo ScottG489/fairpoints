@@ -1,4 +1,4 @@
-variable "tfstate_backend_bucket_name" {}
+//variable "tfstate_backend_bucket_name" {}
 variable "server_instance_name" {}
 variable "server_sg_name" {}
 variable "public_key" {}
