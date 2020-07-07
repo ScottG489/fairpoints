@@ -30,6 +30,14 @@ git clone $GIT_REPO
 cd $PROJECT_NAME
 ROOT_DIR="$(git rev-parse --show-toplevel)/token_server"
 cd $ROOT_DIR
+set +x
+{
+    echo "twilio_account_sid: $TWILIO_ACCOUNT_SID"
+    echo "twilio_api_key: $TWILIO_API_KEY"
+    echo "twilio_api_secret: $TWILIO_API_SECRET"
+    echo "twilio_chat_service_sid: $TWILIO_CHAT_SERVICE_SID"
+} >> "$ROOT_DIR/infra/ansible/vars.yml"
+set -x
 
 npm install
 pkg -t node10-linux-x64 index.js
@@ -55,10 +63,4 @@ terraform apply --auto-approve
 _INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
 
 cd "$ROOT_DIR/infra/ansible"
-{
-    echo "twilio_account_sid: $TWILIO_ACCOUNT_SID"
-    echo "twilio_api_key: $TWILIO_API_KEY"
-    echo "twilio_api_secret: $TWILIO_API_SECRET"
-    echo "twilio_chat_service_sid: $TWILIO_CHAT_SERVICE_SID"
-} >> vars.yml
 ansible-playbook -v -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory $_INVENTORY, master-playbook.yml
