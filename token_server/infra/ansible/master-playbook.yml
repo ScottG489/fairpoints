@@ -27,6 +27,7 @@
   # TODO:   change otherwise.
   - name: Run container
     become: yes
+    no_log: True
     shell: |
       docker rm --force {{ container_name }}
       docker pull {{ image_name }}
