@@ -7,10 +7,14 @@ get_git_root_dir() {
 
 setup_credentials() {
   set +x
-  ID_RSA_CONTENTS=$(echo -n $1 | jq -r .ID_RSA | base64 --decode)
-  MAINKEYPAIR_CONTENTS=$(echo -n $1 | jq -r .MAIN_KEY_PAIR | base64 --decode)
-  AWS_CREDENTIALS_CONTENTS=$(echo -n $1 | jq -r .AWS_CREDENTIALS | base64 --decode)
-  DOCKER_CONFIG_CONTENTS=$(echo -n $1 | jq -r .DOCKER_CONFIG | base64 --decode)
+  local ID_RSA_CONTENTS
+  local MAINKEYPAIR_CONTENTS
+  local AWS_CREDENTIALS_CONTENTS
+  local DOCKER_CONFIG_CONTENTS
+  readonly ID_RSA_CONTENTS=$(echo -n $1 | jq -r .ID_RSA | base64 --decode)
+  readonly MAINKEYPAIR_CONTENTS=$(echo -n $1 | jq -r .MAIN_KEY_PAIR | base64 --decode)
+  readonly AWS_CREDENTIALS_CONTENTS=$(echo -n $1 | jq -r .AWS_CREDENTIALS | base64 --decode)
+  readonly DOCKER_CONFIG_CONTENTS=$(echo -n $1 | jq -r .DOCKER_CONFIG | base64 --decode)
 
   printf -- "$ID_RSA_CONTENTS" >/root/.ssh/id_rsa
   printf -- "$MAINKEYPAIR_CONTENTS" >/root/.ssh/mainkeypair.pem
@@ -23,12 +27,18 @@ setup_credentials() {
 
 setup_token_server_creds() {
   set +x
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  local TWILIO_ACCOUNT_SID
+  local TWILIO_API_KEY
+  local TWILIO_API_SECRET
+  local TWILIO_CHAT_SERVICE_SID
 
-  TWILIO_ACCOUNT_SID=$(echo -n $1 | jq -r .TWILIO_ACCOUNT_SID | base64 --decode)
-  TWILIO_API_KEY=$(echo -n $1 | jq -r .TWILIO_API_KEY | base64 --decode)
-  TWILIO_API_SECRET=$(echo -n $1 | jq -r .TWILIO_API_SECRET | base64 --decode)
-  TWILIO_CHAT_SERVICE_SID=$(echo -n $1 | jq -r .TWILIO_CHAT_SERVICE_SID | base64 --decode)
+  readonly ROOT_DIR=$(get_git_root_dir)
+
+  readonly TWILIO_ACCOUNT_SID=$(echo -n $1 | jq -r .TWILIO_ACCOUNT_SID | base64 --decode)
+  readonly TWILIO_API_KEY=$(echo -n $1 | jq -r .TWILIO_API_KEY | base64 --decode)
+  readonly TWILIO_API_SECRET=$(echo -n $1 | jq -r .TWILIO_API_SECRET | base64 --decode)
+  readonly TWILIO_CHAT_SERVICE_SID=$(echo -n $1 | jq -r .TWILIO_CHAT_SERVICE_SID | base64 --decode)
 
   {
     echo "twilio_account_sid: $TWILIO_ACCOUNT_SID"
@@ -39,7 +49,8 @@ setup_token_server_creds() {
 }
 
 build_package_application() {
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  readonly ROOT_DIR=$(get_git_root_dir)
   cd "$ROOT_DIR"
 
   npm install
@@ -53,16 +64,22 @@ build_package_application() {
 }
 
 build_push_docker_image() {
-  ROOT_DIR=$(get_git_root_dir)
-  DOCKER_IMAGE_NAME=$1
+  local ROOT_DIR
+  local DOCKER_IMAGE_NAME
 
-  docker build -t "$DOCKER_IMAGE_NAME" $ROOT_DIR/token_server
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly DOCKER_IMAGE_NAME=$1
+
+  docker build -t "$DOCKER_IMAGE_NAME" "$ROOT_DIR"/token_server
   docker push "$DOCKER_IMAGE_NAME"
 }
 
 tf_backend_init() {
-  TFSTATE_BACKEND_BUCKET_NAME=$1
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  local TFSTATE_BACKEND_BUCKET_NAME
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly TFSTATE_BACKEND_BUCKET_NAME=$1
 
   cd "$ROOT_DIR/infra/tf/backend-init"
 
@@ -76,8 +93,11 @@ tf_backend_init() {
 }
 
 tf_apply() {
-  RELATIVE_PATH_TO_TF_DIR=$1
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  local RELATIVE_PATH_TO_TF_DIR
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly RELATIVE_PATH_TO_TF_DIR=$1
 
   cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
 
@@ -87,34 +107,46 @@ tf_apply() {
 }
 
 setup_nameservers() {
-  DOMAIN_NAME=$1
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  local DOMAIN_NAME
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly DOMAIN_NAME=$1
 
   cd "$ROOT_DIR/infra/tf"
 
   # Terraform can't manage domains. This gets the nameservers off the hosted zone and sets them as the nameservers for the domain
-  _NS1=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[0]')
-  _NS2=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[1]')
-  _NS3=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[2]')
-  _NS4=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[3]')
-  aws --region us-east-1 route53domains update-domain-nameservers --domain-name "$DOMAIN_NAME" --nameservers Name="$_NS1" Name="$_NS2" Name="$_NS3" Name="$_NS4"
+  NS1=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[0]')
+  NS2=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[1]')
+  NS3=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[2]')
+  NS4=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[3]')
+  aws --region us-east-1 route53domains update-domain-nameservers --domain-name "$DOMAIN_NAME" --nameservers Name="$NS1" Name="$NS2" Name="$NS3" Name="$NS4"
 }
 
 ansible_deploy() {
-  RELATIVE_PATH_TO_TF_DIR=$1
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  local RELATIVE_PATH_TO_TF_DIR
+  local INVENTORY
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly RELATIVE_PATH_TO_TF_DIR=$1
 
   cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
 
-  _INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
+  readonly INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
 
   cd "$ROOT_DIR/infra/ansible"
   ansible-playbook -v -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory $_INVENTORY, master-playbook.yml
 }
 
 ui_deploy() {
-  ROOT_DIR=$(get_git_root_dir)
+  local ROOT_DIR
+  local DOMAIN_NAME
+
+  readonly ROOT_DIR=$(get_git_root_dir)
+  readonly DOMAIN_NAME=$1
+
   cd "$ROOT_DIR"
 
-  aws s3 sync build/ s3://$DOMAIN_NAME
+  aws s3 sync build/ s3://"$DOMAIN_NAME"
 }
