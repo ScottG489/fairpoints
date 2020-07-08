@@ -29,7 +29,7 @@ let Login = ({setChatClientToken, setUserStep}: Props) => {
     async function createChatClient(event: React.FormEvent) {
         event.preventDefault()
         const identity = Math.random().toString(36).substr(2, 5);
-        let response = await fetch('http://localhost:3001/chat/token', {
+        let response = await fetch('http://api.debate-table.com/chat/token', {
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             method: 'POST',
             body: `identity=${identity}`
