@@ -1,50 +1,41 @@
 #!/bin/bash
-set -e
+set -ex
 
-ID_RSA_CONTENTS=$(echo -n $1 | jq -r .ID_RSA | base64 --decode)
-AWS_CREDENTIALS_CONTENTS=$(echo -n $1 | jq -r .AWS_CREDENTIALS | base64 --decode)
+source /opt/build/build_functions.sh
 
-printf -- "$ID_RSA_CONTENTS" > /root/.ssh/id_rsa
-printf -- "$AWS_CREDENTIALS_CONTENTS" > /root/.aws/credentials
-
-chmod 400 /root/.ssh/id_rsa
-
+set +x
+setup_credentials "$1"
 set -x
 
-_PROJECT_NAME='debatable'
+PROJECT_NAME='debatable'
+GIT_REPO='git@github.com:ScottG489/debatable.git'
+TOKEN_SERVER_DOCKER_IMAGE_NAME='scottg489/debatable-token-server:latest'
 # Used for the domain name but also the s3 bucket (AWS requires them to be the same)
-_DOMAIN_NAME='debate-table.com'
-_TERRAFORM_STATE_BUCKET_NAME='tfstate-debatable'
+DOMAIN_NAME='debate-table.com'
+TFSTATE_BUCKET_NAME='tfstate-debatable'
 
-git clone git@github.com:ScottG489/"$_PROJECT_NAME".git
-cd $_PROJECT_NAME
-npm install
-CI=true npm run test
-npm run build
+git clone $GIT_REPO
+cd $PROJECT_NAME
 
-# Initialize terraform backend on first deploy
-cd "$(git rev-parse --show-toplevel)/infra/tf/backend-init"
-aws s3 ls $_TERRAFORM_STATE_BUCKET_NAME && \
-  (terraform init && \
-  terraform import aws_s3_bucket.backend_bucket $_TERRAFORM_STATE_BUCKET_NAME)
-terraform init
-terraform plan
-terraform apply --auto-approve
+set +x
+setup_token_server_creds "$1"
+set -x
 
-cd "$(git rev-parse --show-toplevel)/infra/tf"
-terraform init
-terraform plan
-terraform apply --auto-approve
+build_package_application
 
-# Terraform can't manage domains. This gets the nameservers off the hosted zone and sets them as the nameservers for the domain
-_NS1=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[0]')
-_NS2=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[1]')
-_NS3=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[2]')
-_NS4=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[3]')
-aws --region us-east-1 route53domains update-domain-nameservers --domain-name $_DOMAIN_NAME --nameservers Name="$_NS1" Name="$_NS2" Name="$_NS3" Name="$_NS4"
+build_push_docker_image $TOKEN_SERVER_DOCKER_IMAGE_NAME
 
-cd "$(git rev-parse --show-toplevel)"
-aws s3 sync build/ s3://$_DOMAIN_NAME
+/opt/build/run-test.sh
+
+tf_backend_init $TFSTATE_BUCKET_NAME
+
+tf_apply "infra/tf"
+
+setup_nameservers $DOMAIN_NAME
+
+ansible_deploy "infra/tf"
+
+ui_deploy
 
 # Acceptance testing. Currently running against prod but once we have multiple environments this will point elsewhere
 # TODO: Uncomment this once we have some cypress tests

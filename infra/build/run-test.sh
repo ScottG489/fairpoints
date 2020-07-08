@@ -1,7 +1,9 @@
 #!/bin/bash
-set -e
+set -ex
 
-ROOT_DIR="$(git rev-parse --show-toplevel)/token_server"
+source /opt/build/build_functions.sh
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 trap cleanup EXIT
 cleanup() {
@@ -9,16 +11,9 @@ cleanup() {
   terraform destroy --auto-approve
 }
 
-cd "$ROOT_DIR/infra/tf/test-env"
+tf_apply "infra/tf/test-env"
 
-terraform init
-terraform plan
-terraform apply --auto-approve
-
-_INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
-
-cd "$ROOT_DIR/infra/ansible"
-ansible-playbook -vv -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory $_INVENTORY, master-playbook.yml
+ansible_deploy "infra/tf/test-env"
 
 # TODO: We don't yet have acceptance tests for the token server
 #echo "baseUri=http://${_INVENTORY}:80" > "$(git rev-parse --show-toplevel)/src/test/acceptance/resource/config.properties"

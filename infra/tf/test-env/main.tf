@@ -10,7 +10,7 @@ resource "aws_instance" "server_instance" {
 
   root_block_device {
     volume_type           = "gp2"
-    volume_size           = 30
+    volume_size           = 8
   }
 
   tags = {
@@ -38,4 +38,23 @@ resource "aws_security_group" "server_sg" {
 resource "aws_key_pair" "server_key" {
   key_name   = var.key_name
   public_key = var.public_key
+}
+
+resource "aws_s3_bucket" "website_bucket" {
+  bucket = var.website_bucket_name
+  acl    = "public-read"
+  policy = file("policy.json")
+  force_destroy = true
+
+  website {
+    index_document = "index.html"
+  }
+}
+
+resource "aws_s3_bucket" "www_website_bucket" {
+  bucket                      = var.www_website_bucket_name
+
+  website {
+    redirect_all_requests_to = var.website_bucket_name
+  }
 }
