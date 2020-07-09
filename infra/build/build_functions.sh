@@ -136,7 +136,7 @@ ansible_deploy() {
   readonly INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
 
   cd "$ROOT_DIR/infra/ansible"
-  ansible-playbook -v -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory $_INVENTORY, master-playbook.yml
+  ansible-playbook -v -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory "$INVENTORY", master-playbook.yml
 }
 
 ui_deploy() {
