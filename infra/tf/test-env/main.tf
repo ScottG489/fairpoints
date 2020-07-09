@@ -14,12 +14,12 @@ resource "aws_instance" "server_instance" {
   }
 
   tags = {
-    Name = var.server_instance_name
+    Name = "${var.instance_tag_name}_${random_uuid.rand.result}"
   }
 }
 
 resource "aws_security_group" "server_sg" {
-  name = var.server_sg_name
+  name = "${var.sg_name}_${random_uuid.rand.result}"
   ingress {
     from_port   = 0
     to_port     = 0
@@ -36,12 +36,12 @@ resource "aws_security_group" "server_sg" {
 }
 
 resource "aws_key_pair" "server_key" {
-  key_name   = var.key_name
+  key_name   = "${var.key_pair_name}_${random_uuid.rand.result}"
   public_key = var.public_key
 }
 
 resource "aws_s3_bucket" "website_bucket" {
-  bucket = var.website_bucket_name
+  bucket = "${var.website_bucket_name}-${random_uuid.rand.result}"
   acl    = "public-read"
   policy = file("policy.json")
   force_destroy = true
@@ -52,9 +52,11 @@ resource "aws_s3_bucket" "website_bucket" {
 }
 
 resource "aws_s3_bucket" "www_website_bucket" {
-  bucket                      = var.www_website_bucket_name
+  bucket = "${var.www_website_bucket_name}-${random_uuid.rand.result}"
 
   website {
-    redirect_all_requests_to = var.website_bucket_name
+    redirect_all_requests_to = aws_s3_bucket.website_bucket.bucket
   }
 }
+
+resource "random_uuid" "rand" { }
