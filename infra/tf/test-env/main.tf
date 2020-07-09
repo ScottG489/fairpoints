@@ -43,7 +43,7 @@ resource "aws_key_pair" "server_key" {
 resource "aws_s3_bucket" "website_bucket" {
   bucket = "${var.website_bucket_name}-${random_uuid.rand.result}"
   acl    = "public-read"
-  policy = file("policy.json")
+  policy = templatefile("policy.json.tmpl", { bucket_name: "${var.website_bucket_name}-${random_uuid.rand.result}" })
   force_destroy = true
 
   website {
