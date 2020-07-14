@@ -13,13 +13,13 @@ terraform {
 
 resource "aws_instance" "server_instance" {
   ami           = "ami-09dd2e08d601bff67"
-  instance_type = "t2.micro"
+  instance_type = "t2.nano"
   vpc_security_group_ids = [aws_security_group.server_sg.id]
   key_name = aws_key_pair.server_key.key_name
 
   root_block_device {
     volume_type           = "gp2"
-    volume_size           = 10
+    volume_size           = 8
   }
 
   tags = {
