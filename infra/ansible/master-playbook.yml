@@ -6,6 +6,8 @@
   vars_files:
     - vars.yml
   pre_tasks:
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
     - name: Update apt
       raw: apt update ; apt update
     - name: Install python2 (needed for ansible) and acl for timezone setup
