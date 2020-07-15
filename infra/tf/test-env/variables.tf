@@ -1,7 +1,6 @@
-//variable "spot_instance_tag_name" {}
-variable "instance_tag_name" {}
-variable "sg_name" {}
+variable "name" {}
+variable "instance_type" {}
+variable "spot_type" {}
+variable "spot_price" {}
+variable "volume_size" {}
 variable "public_key" {}
-variable "key_pair_name" {}
-variable "website_bucket_name" {}
-variable "www_website_bucket_name" {}

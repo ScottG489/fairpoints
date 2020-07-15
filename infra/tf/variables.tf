@@ -1,7 +1,7 @@
-variable "server_instance_name" {}
-variable "server_sg_name" {}
+variable "name" {}
+variable "instance_type" {}
+variable "spot_type" {}
+variable "spot_price" {}
+variable "volume_size" {}
 variable "public_key" {}
-variable "key_name" {}
-variable "website_bucket_name" {}
-variable "www_website_bucket_name" {}
 variable "r53_zone_name" {}
