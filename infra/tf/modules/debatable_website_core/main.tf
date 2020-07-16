@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-west-2"
-}
-
 module "helpers_spot_instance_ssh" {
   source = "ScottG489/helpers/aws//modules/spot_instance_ssh"
   version = "0.0.4"
