@@ -11,7 +11,7 @@ terraform {
   }
 }
 
-module "debatable_website_test" {
+module "debatable_website" {
   source = "./modules/debatable_website_core"
   website_name = var.website_name
   token_server_name = var.token_server_name
@@ -26,6 +26,6 @@ module "debatable_website_test" {
 module "helpers_route53_domain_name_servers" {
   source  = "ScottG489/helpers/aws//modules/route53_domain_name_servers"
   version = "0.0.4"
-  route53_zone_name = module.debatable_website_test.r53_zone_name
-  route53_zone_name_servers = module.debatable_website_test.r53_zone_name_servers
+  route53_zone_name = module.debatable_website.r53_zone_name
+  route53_zone_name_servers = module.debatable_website.r53_zone_name_servers
 }
