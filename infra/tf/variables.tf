@@ -5,4 +5,3 @@ variable "spot_type" {}
 variable "spot_price" {}
 variable "volume_size" {}
 variable "public_key" {}
-variable "r53_zone_name" {}

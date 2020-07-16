@@ -11,47 +11,21 @@ terraform {
   }
 }
 
-module "helpers_spot_instance_ssh" {
-  source = "ScottG489/helpers/aws//modules/spot_instance_ssh"
-  version = "0.0.4"
-  name = var.token_server_name
+module "debatable_website_test" {
+  source = "./modules/debatable_website_core"
+  website_name = var.website_name
+  token_server_name = var.token_server_name
   instance_type = var.instance_type
-  spot_type = var.spot_type
   spot_price = var.spot_price
+  spot_type = var.spot_type
   volume_size = var.volume_size
   public_key = var.public_key
-}
-
-module "helpers_s3_website" {
-  source  = "ScottG489/helpers/aws//modules/s3_website"
-  version = "0.0.4"
-  name = var.website_name
-}
-
-resource "aws_route53_zone" "r53_zone" {
-    name         = var.website_name
+  r53_zone_name = var.website_name
 }
 
 module "helpers_route53_domain_name_servers" {
   source  = "ScottG489/helpers/aws//modules/route53_domain_name_servers"
   version = "0.0.4"
-  route53_zone_name = aws_route53_zone.r53_zone.name
-  route53_zone_name_servers = aws_route53_zone.r53_zone.name_servers
-}
-
-module "helpers_s3_website_route53_records" {
-  source  = "ScottG489/helpers/aws//modules/s3_website_route53_records"
-  version = "0.0.4"
-  route53_zone_id = aws_route53_zone.r53_zone.id
-  s3_website_hosted_zone_id = module.helpers_s3_website.website_hosted_zone_id
-}
-
-resource "aws_route53_record" "api_r53_record_A_api" {
-  zone_id = aws_route53_zone.r53_zone.id
-  name    = "api"
-  records = [
-    module.helpers_spot_instance_ssh.public_ip
-  ]
-  ttl     = 300
-  type    = "A"
+  route53_zone_name = module.debatable_website_test.r53_zone_name
+  route53_zone_name_servers = module.debatable_website_test.r53_zone_name_servers
 }

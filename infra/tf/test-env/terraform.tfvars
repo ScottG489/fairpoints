@@ -1,4 +1,4 @@
-name = "debatable-token-test-server"
+name_prefix = "debate-table.com"
 instance_type = "t2.micro"
 spot_type = "one-time"
 spot_price = "0.005"
