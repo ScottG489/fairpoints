@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-west-2"
 }
 
-module "debatable_website_test" {
+module "debatable_website" {
   source = "../modules/debatable_website_core"
   website_name = random_id.name.hex
   token_server_name = random_id.name.hex
