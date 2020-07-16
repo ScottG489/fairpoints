@@ -117,6 +117,8 @@ ansible_deploy() {
   cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
 
   readonly INVENTORY=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_instance.server_instance") | .values.public_dns')
+  # Fail if INVENTORY doesn't get set
+  [[ -n $INVENTORY ]]
 
   cd "$ROOT_DIR/infra/ansible"
   ansible-playbook -v -u ubuntu -e ansible_ssh_private_key_file=/root/.ssh/mainkeypair.pem --inventory "$INVENTORY", master-playbook.yml
