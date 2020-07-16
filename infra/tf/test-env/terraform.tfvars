@@ -1,4 +1,4 @@
-name_prefix = "debate-table.com"
+name_prefix = "debate-table-test.com"
 instance_type = "t2.micro"
 spot_type = "one-time"
 spot_price = "0.005"
