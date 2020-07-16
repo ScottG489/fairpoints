@@ -106,23 +106,6 @@ tf_apply() {
   terraform apply --auto-approve
 }
 
-setup_nameservers() {
-  local ROOT_DIR
-  local DOMAIN_NAME
-
-  readonly ROOT_DIR=$(get_git_root_dir)
-  readonly DOMAIN_NAME=$1
-
-  cd "$ROOT_DIR/infra/tf"
-
-  # Terraform can't manage domains. This gets the nameservers off the hosted zone and sets them as the nameservers for the domain
-  NS1=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[0]')
-  NS2=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[1]')
-  NS3=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[2]')
-  NS4=$(terraform show --json | jq --raw-output '.values.root_module.resources[] | select(.address == "aws_route53_zone.website_r53_zone") | .values.name_servers[3]')
-  aws --region us-east-1 route53domains update-domain-nameservers --domain-name "$DOMAIN_NAME" --nameservers Name="$NS1" Name="$NS2" Name="$NS3" Name="$NS4"
-}
-
 ansible_deploy() {
   local ROOT_DIR
   local RELATIVE_PATH_TO_TF_DIR

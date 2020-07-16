@@ -31,6 +31,14 @@ module "helpers_s3_website" {
 resource "aws_route53_zone" "r53_zone" {
     name         = var.website_name
 }
+
+module "helpers_route53_domain_name_servers" {
+  source  = "ScottG489/helpers/aws//modules/route53_domain_name_servers"
+  version = "0.0.4"
+  route53_zone_name = aws_route53_zone.r53_zone.name
+  route53_zone_name_servers = aws_route53_zone.r53_zone.name_servers
+}
+
 module "helpers_s3_website_route53_records" {
   source  = "ScottG489/helpers/aws//modules/s3_website_route53_records"
   version = "0.0.4"

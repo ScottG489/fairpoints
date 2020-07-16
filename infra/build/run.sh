@@ -32,8 +32,6 @@ tf_backend_init $_TFSTATE_BUCKET_NAME
 
 tf_apply "infra/tf"
 
-setup_nameservers $_DOMAIN_NAME
-
 ansible_deploy "infra/tf"
 
 ui_deploy $_DOMAIN_NAME
