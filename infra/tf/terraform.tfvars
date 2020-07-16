@@ -1,6 +1,6 @@
 #tfstate_backend_bucket_name = "tfstate-debatable"
-token_server_name = "debatable-token-server"
 website_name = "debate-table.com"
+token_server_name = "debatable-token-server"
 instance_type = "t2.micro"
 spot_type = "one-time"
 spot_price = "0.005"

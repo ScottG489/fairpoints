@@ -25,7 +25,7 @@ module "helpers_spot_instance_ssh" {
 module "helpers_s3_website" {
   source  = "ScottG489/helpers/aws//modules/s3_website"
   version = "0.0.4"
-  name = var.token_server_name
+  name = var.website_name
 }
 
 resource "aws_route53_zone" "r53_zone" {

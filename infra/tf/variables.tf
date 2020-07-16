@@ -1,5 +1,5 @@
-variable "token_server_name" {}
 variable "website_name" {}
+variable "token_server_name" {}
 variable "instance_type" {}
 variable "spot_type" {}
 variable "spot_price" {}
