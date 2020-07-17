@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Viewpoint} from "./types";
+import {Viewpoint} from "../types";
 
 interface Props {
     setUserStep: React.Dispatch<React.SetStateAction<string>>

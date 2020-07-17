@@ -3,7 +3,7 @@ import './Chat.css'
 import TwilioChat from 'twilio-chat'
 import {Message as TwilioMessage} from "twilio-chat/lib/message";
 import {Channel} from "twilio-chat/lib/channel";
-import {Topic, Message} from "./types";
+import {Topic, Message} from "../types";
 
 interface Props {
     chatClientToken: string

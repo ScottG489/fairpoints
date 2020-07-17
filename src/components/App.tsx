@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import Chat from './Chat'
 import TopicChooser from "./TopicChooser";
 import ViewpointChooser from "./ViewpointChooser";
-import {Topic} from "./types";
+import {Topic} from "../types";
 
 const availableTopics: Topic[] = [
     {id: 'cheese_delicious', name: 'Cheese is delicious'},

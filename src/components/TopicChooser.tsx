@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Topic} from "./types";
+import {Topic} from "../types";
 
 interface Props {
     availableTopics: Topic[]
