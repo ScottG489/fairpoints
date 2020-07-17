@@ -12,7 +12,6 @@ interface Props {
 }
 
 let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
-    const [channelName, setChannelName] = useState(topic.name);
     const [messages, setMessages] = useState<string[]>([]);
     const [channel, setChannel] = useState<Channel>();
     const [message, setMessage] = useState('')
@@ -33,7 +32,6 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
             </form>
             <form onSubmit={
                 async (event: React.FormEvent) =>
-                    // dispatch(setStore(await foo(token.token.token.toJwt(), event)))
                     await sendMessage(event)
             }>
                 <div className="form-group">
@@ -75,7 +73,6 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
             setMessages(messages => [...messages, newMsg])
         });
         setChannel(topicChannel)
-        setChannelName(topicChannel.friendlyName)
 
         const rawMsgs = await topicChannel.getMessages()
         const msgs = rawMsgs.items.map((m: Message) => {
