@@ -52,7 +52,7 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
                                 await sendMessage(event)
                         }>
                             <div className="form-group">
-                                <input className="form-control" type="text"
+                                <input className="form-control" type="text" value={message}
                                        onChange={(event) => {
                                            setMessage(event.target.value)
                                        }}/>
@@ -79,6 +79,7 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     async function sendMessage(event: React.FormEvent) {
         event.preventDefault()
         await channel?.sendMessage(message)
+
         const rawMsgs = await channel?.getMessages()
         const totalMessages = rawMsgs?.items.length
         console.log('Total messages: ' + totalMessages)
@@ -106,6 +107,7 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
                 body: m.body
             }
             setMessages(messages => [...messages, newMsg])
+            setMessage('')
         });
         setChannel(topicChannel)
 
