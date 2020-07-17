@@ -1,7 +1,6 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import Login from "./Login";
 import Chat from './Chat'
 import TopicChooser from "./TopicChooser";
 import ViewpointChooser from "./ViewpointChooser";
@@ -13,15 +12,13 @@ const availableTopics: Topic[] = [
 ]
 
 let App = () => {
-    const [userStep, setUserStep] = useState('login')
+    const [userStep, setUserStep] = useState('chooseTopic')
     const [topic, setTopic] = useState<Topic>({id: 'none', name: 'What topic interests you?'})
     const [viewpoint, setViewpoint] = useState('')
     const [chatClientToken, setChatClientToken] = useState('')
 
     let render
-    if (userStep === "login") {
-        render = <Login setChatClientToken={setChatClientToken} setUserStep={setUserStep}/>
-    } else if (userStep === 'chooseTopic') {
+    if (userStep === 'chooseTopic') {
         render = <TopicChooser
             availableTopics={availableTopics}
             setUserStep={setUserStep}
@@ -41,6 +38,10 @@ let App = () => {
         render = 'Invalid user step'
     }
 
+    useEffect(() => {
+        authenticate()
+    }, []);
+
     return (
         <div className="App container">
             <div className="row justify-content-center">
@@ -53,6 +54,19 @@ let App = () => {
             </div>
         </div>
     )
+
+    async function authenticate() {
+        const identity = Math.random().toString(36).substr(2, 5);
+        console.log('Identity: ' + identity)
+        let response = await fetch('http://api.debate-table.com/chat/token', {
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            method: 'POST',
+            body: `identity=${identity}`
+        });
+        let json = await response.json();
+        setChatClientToken(json.token)
+        setUserStep('chooseTopic')
+    }
 }
 
 export default App
