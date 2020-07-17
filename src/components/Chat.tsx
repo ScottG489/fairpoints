@@ -24,16 +24,28 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     return (
         <div className="row">
             <div className="col">
-                <div className="row">
-                    <div className="col">
+                <div className="row justify-content-center">
+                    <div className="col-auto">
                         <h2>Viewpoint: {viewpoint}</h2>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
-                        {isLoading ? 'Loading...' : ''}
+                        <div className="row">
+                            <div className="col-auto">
+                                {isLoading ? 'Loading...' : ''}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col">
+                                <table className="table table-sm table-striped">
+                                    <tbody>
+                                    {displayMessages(messages)}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         <div className="grid">
-                            {displayMessages(messages)}
                         </div>
                         <form onSubmit={
                             async (event: React.FormEvent) =>
@@ -56,10 +68,10 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     function displayMessages(messages: Message[]) {
         return messages.map(message => {
             return (
-                <div className="row" key={message.id}>
-                    <span className="author col">{message.author}</span>
-                    <span className="body col">{message.body}</span>
-                </div>
+                <tr>
+                    <td>{message.author}</td>
+                    <td>{message.body}</td>
+                </tr>
             )
         })
     }
