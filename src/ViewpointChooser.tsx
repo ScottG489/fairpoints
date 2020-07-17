@@ -26,7 +26,7 @@ let ViewpointChooser = ({setUserStep, setViewpoint}: Props) => {
               </label>
             </div>
             <div className="form-group">
-              <button className="form-control btn-outline-primary">Submit</button>
+              <button className="form-control btn-outline-primary">Join Channel</button>
             </div>
           </form>
         </div>
