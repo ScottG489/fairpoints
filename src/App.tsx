@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import './App.css'
 
 import Login from "./Login";
 import Chat from './Chat'
@@ -14,7 +13,7 @@ const availableTopics: Topic[] = [
 
 let App = () => {
   const [userStep, setUserStep] = useState('login')
-  const [topic, setTopic] = useState<Topic>({id: '', name: ''})
+  const [topic, setTopic] = useState<Topic>({id: 'none', name: 'What topic interests you?'})
   const [viewpoint, setViewpoint] = useState('')
   const [chatClientToken, setChatClientToken] = useState('')
 
@@ -42,9 +41,15 @@ let App = () => {
     }
 
   return (
-      <div className="App">
-        <h1>{topic.name}</h1>
-        {render}
+      <div className="App container">
+        <div className="row justify-content-center">
+            <div className="col-auto">
+                <h1>{topic.name}</h1>
+            </div>
+        </div>
+        <div className="row justify-content-center">
+            <div className="col-auto">{render}</div>
+        </div>
       </div>
   )
 }

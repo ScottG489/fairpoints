@@ -1,5 +1,4 @@
 import React from 'react'
-import './App.css'
 
 interface Props {
     setChatClientToken: React.Dispatch<React.SetStateAction<string>>
@@ -8,21 +7,18 @@ interface Props {
 
 let Login = ({setChatClientToken, setUserStep}: Props) => {
     return (
-        <div>
-            <form onSubmit={
-                async (event: React.FormEvent) =>
-                    // dispatch(setStore(await foo(token.token.token.toJwt(), event)))
-                    // console.log('logging in')
-                    createChatClient(event)
-            }>
-                <div className="form-group">
-                    <input className="form-control" type="text"
-                           onChange={(event) => {
-                               // createChatClient(event)
-                           }}/>
-                    <input className="form-control" type="submit" value="Login"/>
-                </div>
-            </form>
+        <div className="row">
+            <div className="col">
+                <form onSubmit={
+                    async (event: React.FormEvent) =>
+                        createChatClient(event)
+                }>
+                    <div className="form-group">
+                        <input className="form-control" type="text"/>
+                        <input className="form-control btn-outline-primary" type="submit" value="Login"/>
+                    </div>
+                </form>
+            </div>
         </div>
     )
 

@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import './App.css'
+import './Chat.css'
 import TwilioChat from 'twilio-chat'
-import {Message} from "twilio-chat/lib/message";
+import {Message as TwilioMessage} from "twilio-chat/lib/message";
 import {Channel} from "twilio-chat/lib/channel";
-import {Topic} from "./types";
+import {Topic, Message} from "./types";
 
 interface Props {
     chatClientToken: string
@@ -12,7 +12,7 @@ interface Props {
 }
 
 let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
-    const [messages, setMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [channel, setChannel] = useState<Channel>();
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(true)
@@ -22,32 +22,45 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     }, []);
 
     return (
-        <div>
-            <form>
-                <div>
-                    <h2>Viewpoint: {viewpoint}</h2>
+        <div className="row">
+            <div className="col">
+                <div className="row">
+                    <div className="col">
+                        <h2>Viewpoint: {viewpoint}</h2>
+                    </div>
                 </div>
-                {isLoading ? 'Loading...' : ''}
-                {displayMessages(messages)}
-            </form>
-            <form onSubmit={
-                async (event: React.FormEvent) =>
-                    await sendMessage(event)
-            }>
-                <div className="form-group">
-                    <input className="form-control" type="text"
-                    onChange={(event) => {
-                    setMessage(event.target.value)
-                }} />
-                    <input className="form-control" type="submit" value="Send message"/>
+                <div className="row">
+                    <div className="col">
+                        {isLoading ? 'Loading...' : ''}
+                        <div className="grid">
+                            {displayMessages(messages)}
+                        </div>
+                        <form onSubmit={
+                            async (event: React.FormEvent) =>
+                                await sendMessage(event)
+                        }>
+                            <div className="form-group">
+                                <input className="form-control" type="text"
+                                       onChange={(event) => {
+                                           setMessage(event.target.value)
+                                       }}/>
+                                <input className="form-control" type="submit" value="Send message"/>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     )
 
-    function displayMessages(messages: string[]) {
+    function displayMessages(messages: Message[]) {
         return messages.map(message => {
-            return <div>{message}</div>
+            return (
+                <div className="row" key={message.id}>
+                    <span className="author col">{message.author}</span>
+                    <span className="body col">{message.body}</span>
+                </div>
+            )
         })
     }
 
@@ -73,21 +86,29 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
 
         let topicChannel = await chatClient.getChannelByUniqueName(topic.id);
         await topicChannel.join()
-        topicChannel.on('messageAdded', function(m) {
+        topicChannel.on('messageAdded', function (m) {
             console.log(m.author, m.body);
-            const newMsg = `${m.author}: ${m.body}`
+            const newMsg: Message = {
+                id: m.sid,
+                author: m.author,
+                body: m.body
+            }
             setMessages(messages => [...messages, newMsg])
         });
         setChannel(topicChannel)
 
-        const rawMsgs = await topicChannel.getMessages()
-        const msgs = rawMsgs.items.map((m: Message) => {
-            return `${m.author}: ${m.body}`
+        const twilioMessages = await topicChannel.getMessages()
+        const msgs = twilioMessages.items.map((m: TwilioMessage) => {
+            return {
+                id: m.sid,
+                author: m.author,
+                body: m.body
+            }
         })
         setIsLoading(false)
         setMessages(msgs)
 
-        const totalMessages = rawMsgs.items.length
+        const totalMessages = twilioMessages.items.length
         console.log('Total messages: ' + totalMessages)
     }
 };
