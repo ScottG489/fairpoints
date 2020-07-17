@@ -28,7 +28,7 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
                     <h2>Viewpoint: {viewpoint}</h2>
                 </div>
                 {isLoading ? 'Loading...' : ''}
-                {messages}
+                {displayMessages(messages)}
             </form>
             <form onSubmit={
                 async (event: React.FormEvent) =>
@@ -44,6 +44,12 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
             </form>
         </div>
     )
+
+    function displayMessages(messages: string[]) {
+        return messages.map(message => {
+            return <div>{message}</div>
+        })
+    }
 
     async function sendMessage(event: React.FormEvent) {
         event.preventDefault()
