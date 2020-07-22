@@ -5,8 +5,6 @@ RUN apt-get update && \
   git \
   npm \
   awscli \
-  ansible \
-  docker.io \
   jq \
   curl \
   unzip \
@@ -28,7 +26,6 @@ RUN curl https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linu
 
 # Necessary due to "Error: write after end" bug. Remove once this has been fixed (seems to be issue with npm)
 RUN npm install -g npm
-RUN npm install -g pkg
 
 RUN mkdir /root/.ssh
 COPY known_hosts /root/.ssh/known_hosts

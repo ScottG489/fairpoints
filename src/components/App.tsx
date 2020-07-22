@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
+import config from '../config.conf'
 import Chat from './Chat'
 import TopicChooser from "./TopicChooser";
 import ViewpointChooser from "./ViewpointChooser";
@@ -10,6 +11,7 @@ const availableTopics: Topic[] = [
     {id: 'cheese_delicious', name: 'Cheese is delicious'},
     {id: 'flat_earth', name: 'The Earth is flat'},
 ]
+const url = config.backendBaseUrl
 
 let App = () => {
     const [userStep, setUserStep] = useState('chooseTopic')
@@ -58,11 +60,7 @@ let App = () => {
     async function authenticate() {
         const identity = Math.random().toString(36).substr(2, 5);
         console.log('Identity: ' + identity)
-        let response = await fetch('http://api.debate-table.com/chat/token', {
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            method: 'POST',
-            body: `identity=${identity}`
-        });
+        let response = await fetch(url + `/chat/token?identity=${identity}`);
         let json = await response.json();
         setChatClientToken(json.token)
         setUserStep('chooseTopic')

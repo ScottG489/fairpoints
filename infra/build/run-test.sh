@@ -13,9 +13,7 @@ cleanup() {
 
 tf_apply "infra/tf/test-env"
 
-ansible_deploy "infra/tf/test-env"
-
-# TODO: We don't yet have acceptance tests for the token server
+# TODO: We don't yet have acceptance tests
 #echo "baseUri=http://${_INVENTORY}:80" > "$(git rev-parse --show-toplevel)/src/test/acceptance/resource/config.properties"
 #echo "adminBaseUri=http://${_INVENTORY}:8081" >> "$(git rev-parse --show-toplevel)/src/test/acceptance/resource/config.properties"
 

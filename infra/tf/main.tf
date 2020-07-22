@@ -14,12 +14,6 @@ terraform {
 module "debatable_website" {
   source = "./modules/debatable_website_core"
   website_name = var.website_name
-  token_server_name = var.token_server_name
-  instance_type = var.instance_type
-  spot_price = var.spot_price
-  spot_type = var.spot_type
-  volume_size = var.volume_size
-  public_key = var.public_key
   r53_zone_name = var.website_name
 }
 
