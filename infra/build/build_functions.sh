@@ -64,9 +64,12 @@ tf_apply() {
 ui_deploy() {
   local ROOT_DIR
   local DOMAIN_NAME
+  local REACT_APP_BACKEND_SERVER_BASE_URL
 
   readonly ROOT_DIR=$(get_git_root_dir)
   readonly DOMAIN_NAME=$1
+  readonly REACT_APP_BACKEND_SERVER_BASE_URL="http://api.$DOMAIN_NAME"
+  export REACT_APP_BACKEND_SERVER_BASE_URL
 
   cd "$ROOT_DIR"
 
