@@ -43,7 +43,7 @@ let ViewpointChooser = ({setUserStep, setViewpoint}: Props) => {
                 <div key={viewpoint.id} className="form-group row justify-content-center">
                     <div className="col-auto">
                         <label>
-                            <input type="radio" id={viewpoint.id} name="topic" value="agree"
+                            <input type="radio" id={viewpoint.id} name="topic" value={viewpoint.id}
                                    onChange={updateSelectedTopic} className="form-control"/>
                             {viewpoint.name}
                         </label>

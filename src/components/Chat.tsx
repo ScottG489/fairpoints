@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react'
 import './Chat.css'
 import TwilioChat from 'twilio-chat'
 import {Message as TwilioMessage} from "twilio-chat/lib/message";
-import {Channel} from "twilio-chat/lib/channel";
-import {Topic, Message} from "../types";
+import {Channel as TwilioChannel} from "twilio-chat/lib/channel";
+import {Topic, Message, Channel} from "../types";
+import config from "../config.conf";
 
 interface Props {
     chatClientToken: string
@@ -11,9 +12,11 @@ interface Props {
     viewpoint: string
 }
 
+const url = config.backendBaseUrl
+
 let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [channel, setChannel] = useState<Channel>();
+    const [channel, setChannel] = useState<TwilioChannel>();
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(true)
 
@@ -88,16 +91,19 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     async function joinChannel() {
         let chatClient = await TwilioChat.create(chatClientToken);
 
+        let response = await fetch(url + `/chat/channel?topicId=${topic.id}&viewpoint=${viewpoint}`);
+        let channel: Channel = await response.json();
+
         try {
             await chatClient.createChannel({
-                uniqueName: topic.id,
+                uniqueName: channel.id,
                 friendlyName: topic.name,
             })
         } catch (e) {
             console.log(`Error creating channel: ${e.message}`)
         }
 
-        let topicChannel = await chatClient.getChannelByUniqueName(topic.id);
+        let topicChannel = await chatClient.getChannelByUniqueName(channel.id);
         await topicChannel.join()
         topicChannel.on('messageAdded', function (m) {
             console.log(m.author, m.body);
