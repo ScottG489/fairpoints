@@ -84,6 +84,7 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
         await channel?.sendMessage(message)
 
         const rawMsgs = await channel?.getMessages()
+        setMessage('')
         const totalMessages = rawMsgs?.items.length
         console.log('Total messages: ' + totalMessages)
     }
@@ -113,7 +114,6 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
                 body: m.body
             }
             setMessages(messages => [...messages, newMsg])
-            setMessage('')
         });
         setChannel(topicChannel)
 
