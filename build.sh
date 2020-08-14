@@ -1,5 +1,5 @@
 curl -v -sS -w '%{http_code}' \
-  --data-binary '{"ID_RSA": "'"$1"'", "DOCKER_CONFIG": "'"$2"'", "AWS_CREDENTIALS": "'"$3"'", "MAIN_KEY_PAIR": "'"$4"'"}' \
+  --data-binary '{"ID_RSA": "'"$1"'", "AWS_CREDENTIALS": "'"$2"'"}' \
   'http://api.simple-ci.com/build?image=scottg489/debatable-build:latest' \
   | tee /tmp/foo \
   | sed '$d' && \
