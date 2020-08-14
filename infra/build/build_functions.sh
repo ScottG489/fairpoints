@@ -23,10 +23,12 @@ build_application() {
   readonly ROOT_DIR=$(get_git_root_dir)
   cd "$ROOT_DIR"
 
-  npm install
+  npm ci
 
   # Build and package front-end
-  CI=true npm run test
+  export CI=true
+  npm run test
+  unset CI
 }
 
 tf_backend_init() {
@@ -73,6 +75,9 @@ ui_deploy() {
 
   cd "$ROOT_DIR"
 
+  export CI=true
   npm run build
+  unset CI
+
   aws s3 sync build/ s3://"$DOMAIN_NAME"
 }
