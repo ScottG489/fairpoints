@@ -1,18 +1,14 @@
 import React, {useEffect, useState} from 'react'
 import './Chat.css'
-import TwilioChat from 'twilio-chat'
-import {Message as TwilioMessage} from "twilio-chat/lib/message";
+import joinChannel from "./JoinChannel"
 import {Channel as TwilioChannel} from "twilio-chat/lib/channel";
-import {Topic, Message, Channel} from "../types";
-import config from "../config.conf";
+import {Message, Topic} from "../types";
 
 interface Props {
     chatClientToken: string
     topic: Topic
     viewpoint: string
 }
-
-const url = config.backendBaseUrl
 
 let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -21,8 +17,8 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        joinChannel()
-    }, []);
+        joinChannel(chatClientToken, topic, viewpoint, setMessages, setChannel, setIsLoading)
+    }, [chatClientToken, topic, viewpoint]);
 
     return (
         <div className="row">
@@ -86,49 +82,6 @@ let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
         const rawMsgs = await channel?.getMessages()
         setMessage('')
         const totalMessages = rawMsgs?.items.length
-        console.log('Total messages: ' + totalMessages)
-    }
-
-    async function joinChannel() {
-        let chatClient = await TwilioChat.create(chatClientToken);
-
-        let response = await fetch(url + `/chat/channel?topicId=${topic.id}&viewpoint=${viewpoint}`);
-        let channel: Channel = await response.json();
-
-        try {
-            await chatClient.createChannel({
-                uniqueName: channel.id,
-                friendlyName: topic.name,
-            })
-        } catch (e) {
-            console.log(`Error creating channel: ${e.message}`)
-        }
-
-        let topicChannel = await chatClient.getChannelByUniqueName(channel.id);
-        await topicChannel.join()
-        topicChannel.on('messageAdded', function (m) {
-            console.log(m.author, m.body);
-            const newMsg: Message = {
-                id: m.sid,
-                author: m.author,
-                body: m.body
-            }
-            setMessages(messages => [...messages, newMsg])
-        });
-        setChannel(topicChannel)
-
-        const twilioMessages = await topicChannel.getMessages()
-        const msgs = twilioMessages.items.map((m: TwilioMessage) => {
-            return {
-                id: m.sid,
-                author: m.author,
-                body: m.body
-            }
-        })
-        setIsLoading(false)
-        setMessages(msgs)
-
-        const totalMessages = twilioMessages.items.length
         console.log('Total messages: ' + totalMessages)
     }
 };
