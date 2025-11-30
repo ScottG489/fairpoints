@@ -19,7 +19,7 @@ module "debatable_website" {
 
 module "helpers_route53_domain_name_servers" {
   source  = "ScottG489/helpers/aws//modules/route53_domain_name_servers"
-  version = "0.0.4"
+  version = "1.5.0"
   route53_zone_name = module.debatable_website.r53_zone_name
   route53_zone_name_servers = module.debatable_website.r53_zone_name_servers
 }

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+git config --global --add safe.directory /opt/build/debatable
+
 source /opt/build/build_functions.sh
 
 set +x
@@ -14,7 +16,9 @@ declare -r _GIT_REPO='git@github.com:ScottG489/debatable.git'
 declare -r _DOMAIN_NAME='debate-table.com'
 declare -r _TFSTATE_BUCKET_NAME='tfstate-debatable'
 
-git clone $_GIT_REPO
+if [ ! -d "$_PROJECT_NAME" ]; then
+  git clone $_GIT_REPO
+fi
 cd $_PROJECT_NAME
 
 build_application

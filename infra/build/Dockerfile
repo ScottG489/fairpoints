@@ -20,12 +20,23 @@ RUN apt-get update && \
   xauth \
   xvfb
 
-RUN curl https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linux_amd64.zip -o /tmp/terraform.zip && \
+RUN curl https://releases.hashicorp.com/terraform/0.13.0/terraform_0.13.0_linux_amd64.zip -o /tmp/terraform.zip && \
   unzip -d /usr/local/bin /tmp/terraform.zip && \
   rm /tmp/terraform.zip
 
-# Necessary due to "Error: write after end" bug. Remove once this has been fixed (seems to be issue with npm)
-RUN npm install -g npm
+ENV HOME=/root
+
+ARG NVM_VERSION=0.40.3
+ARG NODE_VERSION=24.11.1
+ENV NODE_VERSION=$NODE_VERSION
+ENV NVM_DIR=${HOME}/.nvm
+
+# Install nvm with node and npm
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash
+RUN . $NVM_DIR/nvm.sh \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
 
 RUN mkdir /root/.ssh
 COPY known_hosts /root/.ssh/known_hosts
