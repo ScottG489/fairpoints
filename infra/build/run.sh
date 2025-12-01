@@ -15,9 +15,11 @@ declare -r _GIT_REPO='git@github.com:ScottG489/debatable.git'
 # Used for the domain name but also the s3 bucket (AWS requires them to be the same)
 declare -r _DOMAIN_NAME='debate-table.com'
 declare -r _TFSTATE_BUCKET_NAME='tfstate-debatable'
+declare -r _RUN_TASK=$(jq -r .RUN_TASK <<< "$1")
+declare -r _GIT_BRANCH=$(jq -r .GIT_BRANCH <<< "$1")
 
 if [ ! -d "$_PROJECT_NAME" ]; then
-  git clone $_GIT_REPO
+  git clone --branch $_GIT_BRANCH $_GIT_REPO
 fi
 cd $_PROJECT_NAME
 
@@ -25,6 +27,7 @@ build_application
 
 /opt/build/run-test.sh
 
+[ "$_RUN_TASK" != "deploy" ] && exit 0
 #tf_backend_init $_TFSTATE_BUCKET_NAME
 #
 #tf_apply "infra/tf"
