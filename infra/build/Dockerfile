@@ -27,7 +27,7 @@ RUN curl https://releases.hashicorp.com/terraform/0.13.0/terraform_0.13.0_linux_
 ENV HOME=/root
 
 ARG NVM_VERSION=0.40.3
-ARG NODE_VERSION=24.11.1
+ARG NODE_VERSION=20.19.0
 ENV NODE_VERSION=$NODE_VERSION
 ENV NVM_DIR=${HOME}/.nvm
 
