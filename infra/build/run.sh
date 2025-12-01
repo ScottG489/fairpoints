@@ -27,7 +27,7 @@ build_application
 
 /opt/build/run-test.sh
 
-[ "$_RUN_TASK" != "deploy" ] && exit 0
+#[ "$_RUN_TASK" != "deploy" ] && exit 0
 #tf_backend_init $_TFSTATE_BUCKET_NAME
 #
 #tf_apply "infra/tf"
