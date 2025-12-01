@@ -20,8 +20,6 @@ export default defineConfig(({ mode }) => {
       importPrefixPlugin(),
       htmlPlugin(mode),
       svgrPlugin(),
-      
-      
     ],
   };
 });

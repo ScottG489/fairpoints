@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import './Chat.css'
 import joinChannel from "./JoinChannel"
-import {Channel as TwilioChannel} from "twilio-chat/lib/channel";
+import {Conversation} from "@twilio/conversations";
 import {Message, Topic} from "../types";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 
 let Chat = ({chatClientToken, topic, viewpoint}: Props) => {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [channel, setChannel] = useState<TwilioChannel>();
+    const [channel, setChannel] = useState<Conversation>();
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(true)
 
