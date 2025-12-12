@@ -45,7 +45,7 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "@types/node": "^24.0.0",
+    "@types/node": "^24.10.1",
     "@vitejs/plugin-react": "^5.0.0",
     "@vitest/ui": "^4.0.14",
     "body-parser": "^2.0.0",
