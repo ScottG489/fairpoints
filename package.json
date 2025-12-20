@@ -47,11 +47,11 @@
     "@testing-library/user-event": "14.6.1",
     "@types/node": "24.10.4",
     "@vitejs/plugin-react": "5.1.2",
-    "@vitest/ui": "4.0.15",
+    "@vitest/ui": "4.0.16",
     "body-parser": "2.2.1",
     "jsdom": "27.3.0",
     "vite": "7.3.0",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "4.0.15"
+    "vitest": "4.0.16"
   }
 }
