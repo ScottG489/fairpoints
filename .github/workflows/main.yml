@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
     - name: Build and push image which app build runs on
       run: ./infra/build/build.sh ${{ secrets.ID_RSA_CONTENTS_BASE64 }} ${{ secrets.DOCKER_CONFIG_CONTENTS_BASE64 }}
       env:
@@ -21,6 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
     - name: Build and deploy
       run: ./build.sh deploy ${{ secrets.ID_RSA_CONTENTS_BASE64 }} ${{ secrets.AWS_CREDENTIALS_CONTENTS_BASE64 }}
