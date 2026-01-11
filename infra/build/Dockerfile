@@ -9,7 +9,7 @@ RUN apt-get update && \
   curl=8.5.0-2ubuntu10.6 \
   unzip=6.0-28ubuntu4 \
   # Required for Cypress
-  libgtk-3-0t64=3.24.41-4ubuntu1 \
+  libgtk-3-0t64=3.24.41-4ubuntu1.1 \
   libgbm-dev=25.0.7-0ubuntu0.24.04.2 \
   libnotify-dev=0.8.3-1build2 \
   libnss3=2:3.98-1build1 \
