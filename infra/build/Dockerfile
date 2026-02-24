@@ -14,7 +14,7 @@ RUN apt-get update && \
   libnotify-dev=0.8.3-1build2 \
   libnss3=2:3.98-1build1 \
   libxss1=1:1.2.3-1build3 \
-  libasound2t64=1.2.11-1ubuntu0.1 \
+  libasound2t64=1.2.11-1ubuntu0.2 \
   libxtst6=2:1.2.3-1.1build1 \
   xauth=1:1.1.2-1build1 \
   xvfb=2:21.1.12-1ubuntu1.5 \
