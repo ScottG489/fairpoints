@@ -2,22 +2,22 @@ FROM ubuntu:26.04@sha256:5e275723f82c67e387ba9e3c24baa0abdcb268917f276a0561c97be
 
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  ca-certificates=20240203 \
-  git=1:2.43.0-1ubuntu7.3 \
-  openssh-client=1:9.6p1-3ubuntu13.15 \
-  jq=1.7.1-3ubuntu0.24.04.2 \
-  curl=8.5.0-2ubuntu10.8 \
-  unzip=6.0-28ubuntu4.1 \
+  ca-certificates=20260223 \
+  git=1:2.53.0-1ubuntu1 \
+  openssh-client=1:10.2p1-2ubuntu3 \
+  jq=1.8.1-4ubuntu2 \
+  curl=8.18.0-1ubuntu2 \
+  unzip=6.0-29ubuntu1 \
   # Required for Cypress
-  libgtk-3-0t64=3.24.41-4ubuntu1.3 \
-  libgbm-dev=25.2.8-0ubuntu0.24.04.1 \
-  libnotify-dev=0.8.3-1build2 \
-  libnss3=2:3.98-1ubuntu0.1 \
-  libxss1=1:1.2.3-1build3 \
-  libasound2t64=1.2.11-1ubuntu0.2 \
-  libxtst6=2:1.2.3-1.1build1 \
-  xauth=1:1.1.2-1build1 \
-  xvfb=2:21.1.12-1ubuntu1.5 \
+  libgtk-3-0t64=3.24.52-0ubuntu1 \
+  libgbm-dev=26.0.3-1ubuntu1 \
+  libnotify-dev=0.8.8-1 \
+  libnss3=2:3.120-1ubuntu2 \
+  libxss1=1:1.2.3-1build4 \
+  libasound2t64=1.2.15.3-1ubuntu1 \
+  libxtst6=2:1.2.5-1build1 \
+  xauth=1:1.1.2-1.1build1 \
+  xvfb=2:21.1.22-1ubuntu1 \
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/*
 
