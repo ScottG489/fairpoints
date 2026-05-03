@@ -68,13 +68,14 @@ function ChatRoomConnected({
   );
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [joinError, setJoinError] = React.useState<string | null>(null);
+  const [sendError, setSendError] = React.useState<string | null>(null);
   const [isJoining, setIsJoining] = React.useState(false);
 
   React.useEffect(() => {
     if (!tokenQuery.data) return;
     let cancelled = false;
     setIsJoining(true);
-    joinChannel(tokenQuery.data.token, topic, viewpoint, (incoming) => {
+    joinChannel(tokenQuery.data.token, tokenQuery.data.identity, topic, viewpoint, (incoming) => {
       if (cancelled) return;
       setMessages((prev) =>
         prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming],
@@ -136,7 +137,7 @@ function ChatRoomConnected({
             error={
               tokenQuery.error
                 ? "Couldn't fetch chat token. Is the backend running?"
-                : joinError
+                : joinError ?? sendError
             }
           />
           <Separator />
@@ -144,7 +145,14 @@ function ChatRoomConnected({
             disabled={!isReady}
             onSend={async (body) => {
               if (!conversation) return;
-              await conversation.sendMessage(body);
+              setSendError(null);
+              try {
+                await conversation.sendMessage(body);
+              } catch (e) {
+                console.error("[debatable] sendMessage failed", e);
+                setSendError(e instanceof Error ? e.message : String(e));
+                throw e;
+              }
             }}
           />
         </CardContent>

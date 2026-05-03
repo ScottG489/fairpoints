@@ -9,6 +9,7 @@ export interface JoinResult {
 
 export async function joinChannel(
   chatClientToken: string,
+  identity: string,
   topic: Topic,
   viewpoint: string,
   onIncomingMessage: (m: Message) => void,
@@ -22,42 +23,16 @@ export async function joinChannel(
   const response = await fetch(
     `${config.backendBaseUrl}/chat/channel?topicId=${encodeURIComponent(
       topic.id,
-    )}&viewpoint=${encodeURIComponent(viewpoint)}`,
+    )}&viewpoint=${encodeURIComponent(viewpoint)}&identity=${encodeURIComponent(
+      identity,
+    )}`,
   );
   if (!response.ok) {
     throw new Error(`Backend failed to create chat channel: ${response.status}`);
   }
   const channel: Channel = await response.json();
 
-  let conversation: Conversation;
-  try {
-    conversation = await chatClient.createConversation({
-      uniqueName: channel.id,
-      friendlyName: topic.name,
-    });
-  } catch (e) {
-    const createMessage = formatError(e);
-    try {
-      conversation = await chatClient.getConversationByUniqueName(channel.id);
-    } catch (lookupError) {
-      throw new Error(
-        `Could not create or find Twilio conversation "${channel.id}": ${createMessage}; ${formatError(
-          lookupError,
-        )}`,
-      );
-    }
-  }
-
-  try {
-    await conversation.join();
-  } catch (e) {
-    const joinMessage = formatError(e);
-    if (!joinMessage.toLowerCase().includes("already")) {
-      throw new Error(
-        `Could not join Twilio conversation "${channel.id}": ${joinMessage}`,
-      );
-    }
-  }
+  const conversation = await waitForConversation(chatClient, channel.id);
 
   conversation.on("messageAdded", (m) => {
     onIncomingMessage({
@@ -75,6 +50,39 @@ export async function joinChannel(
   }));
 
   return { conversation, initialMessages };
+}
+
+async function waitForConversation(
+  client: Client,
+  uniqueName: string,
+  timeoutMs = 15_000,
+): Promise<Conversation> {
+  try {
+    return await client.getConversationByUniqueName(uniqueName);
+  } catch {
+    // Not yet a participant from the SDK's view — wait for the join event.
+  }
+
+  return new Promise<Conversation>((resolve, reject) => {
+    const handler = (conv: Conversation) => {
+      if (conv.uniqueName !== uniqueName) return;
+      cleanup();
+      resolve(conv);
+    };
+    const cleanup = () => {
+      clearTimeout(timer);
+      client.removeListener("conversationJoined", handler);
+      client.removeListener("conversationAdded", handler);
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(
+        new Error(`Timed out waiting to join Twilio conversation "${uniqueName}"`),
+      );
+    }, timeoutMs);
+    client.on("conversationJoined", handler);
+    client.on("conversationAdded", handler);
+  });
 }
 
 export async function fetchChatToken(): Promise<{
