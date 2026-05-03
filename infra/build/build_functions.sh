@@ -70,12 +70,12 @@ tf_apply() {
 ui_deploy() {
   local ROOT_DIR
   local DOMAIN_NAME
-  local REACT_APP_BACKEND_SERVER_BASE_URL
+  local NEXT_PUBLIC_BACKEND_SERVER_BASE_URL
 
   readonly ROOT_DIR=$(get_git_root_dir)
   readonly DOMAIN_NAME=$1
-  readonly REACT_APP_BACKEND_SERVER_BASE_URL="http://api.$DOMAIN_NAME"
-  export REACT_APP_BACKEND_SERVER_BASE_URL
+  readonly NEXT_PUBLIC_BACKEND_SERVER_BASE_URL="http://api.$DOMAIN_NAME"
+  export NEXT_PUBLIC_BACKEND_SERVER_BASE_URL
 
   cd "$ROOT_DIR"
 
@@ -83,5 +83,5 @@ ui_deploy() {
   npm run build
   unset CI
 
-  aws s3 sync build/ s3://"$DOMAIN_NAME"
+  aws s3 sync out/ s3://"$DOMAIN_NAME" --delete
 }
