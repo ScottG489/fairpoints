@@ -42,8 +42,14 @@ next-env.d.ts
 # IntelliJ
 .idea/
 
+# Vim
+*.swp
+
 # Local cleanup leftovers
 .node_modules_old
+
+# Tool-generated session handoffs
+.continues-handoff.md
 
 # Terraform (https://raw.githubusercontent.com/github/gitignore/master/Terraform.gitignore)
 **/.terraform/*
