@@ -30,7 +30,7 @@ build_application
 #
 #tf_apply "infra/tf"
 #
-#ui_deploy $_DOMAIN_NAME
+#ui_deploy "infra/tf"
 
 # Acceptance testing. Currently running against prod but once we have multiple environments this will point elsewhere
 # TODO: Uncomment this once we have some cypress tests

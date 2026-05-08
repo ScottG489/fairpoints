@@ -69,19 +69,26 @@ tf_apply() {
 
 ui_deploy() {
   local ROOT_DIR
-  local DOMAIN_NAME
+  local RELATIVE_PATH_TO_TF_DIR
+  local BUCKET_NAME
   local NEXT_PUBLIC_BACKEND_SERVER_BASE_URL
 
   readonly ROOT_DIR=$(get_git_root_dir)
-  readonly DOMAIN_NAME=$1
-  readonly NEXT_PUBLIC_BACKEND_SERVER_BASE_URL="http://api.$DOMAIN_NAME"
-  export NEXT_PUBLIC_BACKEND_SERVER_BASE_URL
+  readonly RELATIVE_PATH_TO_TF_DIR=$1
+
+  cd "$ROOT_DIR/$RELATIVE_PATH_TO_TF_DIR"
+
+  readonly BUCKET_NAME=$(terraform show --json | jq --raw-output '.values.outputs.bucket.value')
+  [[ -n $BUCKET_NAME ]]
 
   cd "$ROOT_DIR"
+
+  readonly NEXT_PUBLIC_BACKEND_SERVER_BASE_URL="http://api.$BUCKET_NAME"
+  export NEXT_PUBLIC_BACKEND_SERVER_BASE_URL
 
   export CI=true
   npm run build
   unset CI
 
-  aws s3 sync out/ s3://"$DOMAIN_NAME" --delete
+  aws s3 sync out/ s3://"$BUCKET_NAME" --delete
 }
