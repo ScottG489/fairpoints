@@ -1,2 +1,2 @@
-#tfstate_backend_bucket_name = "tfstate-debatable"
-website_name = "debate-table.com"
+#tfstate_backend_bucket_name = "tfstate-fairpoints"
+website_name = "fairpoints.chat"

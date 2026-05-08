@@ -2,8 +2,8 @@ provider "aws" {
   region = "us-west-2"
 }
 
-module "debatable_website" {
-  source = "../modules/debatable_website_core"
+module "fairpoints_website" {
+  source = "../modules/fairpoints_website_core"
   website_name = random_id.name.hex
   r53_zone_name = random_id.name.hex
 }

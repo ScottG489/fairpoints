@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-git config --global --add safe.directory /opt/build/debatable
+git config --global --add safe.directory /opt/build/fairpoints
 
 source /opt/build/build_functions.sh
 
@@ -10,11 +10,11 @@ setup_credentials "$1"
 set -x
 
 # These are prefixed with an _ because they have global scope and the build_function lib may have overlap
-declare -r _PROJECT_NAME='debatable'
-declare -r _GIT_REPO='git@github.com:ScottG489/debatable.git'
+declare -r _PROJECT_NAME='fairpoints'
+declare -r _GIT_REPO='git@github.com:ScottG489/fairpoints.git'
 # Used for the domain name but also the s3 bucket (AWS requires them to be the same)
-declare -r _DOMAIN_NAME='debate-table.com'
-declare -r _TFSTATE_BUCKET_NAME='tfstate-debatable'
+declare -r _DOMAIN_NAME='fairpoints.chat'
+declare -r _TFSTATE_BUCKET_NAME='tfstate-fairpoints'
 declare -r _RUN_TASK=$(jq -r .RUN_TASK <<< "$1")
 declare -r _GIT_BRANCH=$(jq -r .GIT_BRANCH <<< "$1")
 

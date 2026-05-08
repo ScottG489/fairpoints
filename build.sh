@@ -2,7 +2,7 @@
 
 readonly GIT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
 readonly DOCKER_IMAGE_TAG=$([ "$GIT_BRANCH" = "master" ] && echo "latest" || echo "$GIT_BRANCH" | sed 's/\//-/g')
-readonly IMAGE_NAME="scottg489/debatable-build:$DOCKER_IMAGE_TAG"
+readonly IMAGE_NAME="scottg489/fairpoints-build:$DOCKER_IMAGE_TAG"
 readonly RUN_TASK=$1
 readonly ID_RSA=$2
 readonly AWS_CREDENTIALS=$3

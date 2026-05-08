@@ -36,7 +36,7 @@ export function SiteHeader() {
             how it goes
           </Link>
           <a
-            href="https://github.com/ScottG489/debatable"
+            href="https://github.com/ScottG489/fairpoints"
             target="_blank"
             rel="noreferrer noopener"
             className="transition-colors hover:text-[color:var(--foreground)]"

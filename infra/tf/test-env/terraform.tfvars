@@ -1,1 +1,1 @@
-name_prefix = "debate-table-test.com"
+name_prefix = "fairpoints-test.chat"

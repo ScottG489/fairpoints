@@ -124,7 +124,7 @@ function ChatRoomConnected({
             try {
               await conversation.sendMessage(body);
             } catch (e) {
-              console.error("[fair-points] sendMessage failed", e);
+              console.error("[fairpoints] sendMessage failed", e);
               setSendError(e instanceof Error ? e.message : String(e));
               throw e;
             }

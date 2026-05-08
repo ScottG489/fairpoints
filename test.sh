@@ -24,8 +24,8 @@ sudo chown -R "$(whoami)":"$(whoami)" . || true
 find . -name '*terraform.tfstate*' -exec rm {} \; || true
 find . -name '.terraform' -type d -prune -exec rm -rf {} \; || true
 
-LOCAL_IMAGE_TAG="debatable-build-test-$(uuidgen | cut -c -8)"
+LOCAL_IMAGE_TAG="fairpoints-build-test-$(uuidgen | cut -c -8)"
 docker build infra/build -t $LOCAL_IMAGE_TAG && \
 docker run -it \
-  --volume "$PWD:/opt/build/debatable" \
+  --volume "$PWD:/opt/build/fairpoints" \
   $LOCAL_IMAGE_TAG "$JSON_BODY"
