@@ -16,13 +16,15 @@ export const availableTopics: Topic[] = [
 export const availableViewpoints: Viewpoint[] = [
   {
     id: "agree",
-    name: "Agree",
-    description: "You hold this view and want to defend it.",
+    name: "I lean this way",
+    description: "You hold this view and want to share why it sits right with you.",
+    chipLabel: "you lean this way",
   },
   {
     id: "disagree",
-    name: "Disagree",
-    description: "You reject this view and want to argue against it.",
+    name: "I see it differently",
+    description: "You don't see it that way and want to share what you see instead.",
+    chipLabel: "you see it differently",
   },
 ];
 

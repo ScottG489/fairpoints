@@ -1,25 +1,47 @@
 import Link from "next/link";
-import { MessageCircleMore } from "lucide-react";
+
+import { DOUBLE_RULE, TAGLINE_LONG, TOKENS } from "@/lib/brand";
 
 export function SiteHeader() {
   return (
-    <header className="border-border/60 bg-background/80 sticky top-0 z-40 w-full border-b backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <MessageCircleMore className="text-primary size-5" />
-          <span>Debatable</span>
+    <header
+      className="pb-3"
+      style={{ borderBottom: DOUBLE_RULE }}
+    >
+      <div className="flex items-baseline justify-between">
+        <Link
+          href="/"
+          className="flex items-baseline gap-1.5 text-lg"
+          style={{ fontWeight: 500, letterSpacing: "-0.005em" }}
+        >
+          <span>fair points</span>
+          <span
+            style={{
+              color: TOKENS.inkMuted,
+              fontStyle: "italic",
+              fontSize: "0.85em",
+            }}
+          >
+            — {TAGLINE_LONG}
+          </span>
         </Link>
-        <nav className="text-muted-foreground flex items-center gap-5 text-sm">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Start a debate
+        <nav
+          className="flex items-baseline gap-5 text-sm"
+          style={{ color: TOKENS.inkMuted }}
+        >
+          <Link
+            href="/#how"
+            className="transition-colors hover:text-[color:var(--foreground)]"
+          >
+            how it goes
           </Link>
           <a
             href="https://github.com/ScottG489/debatable"
-            className="hover:text-foreground transition-colors"
             target="_blank"
             rel="noreferrer noopener"
+            className="transition-colors hover:text-[color:var(--foreground)]"
           >
-            GitHub
+            github
           </a>
         </nav>
       </div>

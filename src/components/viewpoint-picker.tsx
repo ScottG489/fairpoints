@@ -2,111 +2,219 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { CARD_GRAIN_URL, PASTELS, type Pastel, TOKENS } from "@/lib/brand";
 import { availableViewpoints, findTopic } from "@/lib/topics";
 import type { ViewpointId } from "@/lib/types";
 
-const viewpointIcons: Record<ViewpointId, typeof ThumbsUp> = {
-  agree: ThumbsUp,
-  disagree: ThumbsDown,
+const stancePastel: Record<ViewpointId, Pastel> = {
+  agree: PASTELS[1], // sage
+  disagree: PASTELS[0], // rose
 };
 
 export function ViewpointPicker() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const topicId = searchParams.get("topic");
   const topic = findTopic(topicId);
-  const [selected, setSelected] = React.useState<ViewpointId | null>(null);
 
   if (!topic) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-start gap-3">
-          <CardTitle>No topic selected</CardTitle>
-          <CardDescription>
-            Head back and pick a topic to debate.
-          </CardDescription>
-          <Link
-            href="/"
-            className={buttonVariants({ variant: "outline" })}
-          >
-            <ArrowLeft className="size-4" />
-            Choose a topic
-          </Link>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!selected || !topic) return;
-    router.push(
-      `/chat?topic=${encodeURIComponent(topic.id)}&viewpoint=${encodeURIComponent(
-        selected,
-      )}`,
-    );
+    return <NoTopicState />;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <Link
-          href="/"
-          className="text-muted-foreground hover:text-foreground inline-flex w-fit items-center gap-1 text-sm"
+    <div className="flex flex-col gap-9">
+      <Link
+        href="/"
+        className="inline-flex w-fit items-center gap-1.5 text-sm transition-colors hover:text-[color:var(--foreground)]"
+        style={{ color: TOKENS.inkMuted }}
+      >
+        <ArrowLeft className="size-3.5" />
+        Change topic
+      </Link>
+
+      <header className="flex flex-col gap-3">
+        <span
+          className="text-[10px] uppercase tracking-[0.28em]"
+          style={{
+            color: TOKENS.accent,
+            fontFamily: "var(--font-sans)",
+            fontWeight: 700,
+          }}
         >
-          <ArrowLeft className="size-3.5" />
-          Change topic
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          About this topic
+        </span>
+        <h1
+          className="text-balance text-3xl md:text-4xl"
+          style={{
+            fontFamily: "var(--font-newsreader)",
+            fontWeight: 500,
+            letterSpacing: "-0.015em",
+            lineHeight: 1.15,
+          }}
+        >
           {topic.name}
         </h1>
-        <p className="text-muted-foreground text-base">
-          What&rsquo;s your stance? You&rsquo;ll be matched with someone holding the
-          opposite view.
+        {topic.blurb ? (
+          <p
+            className="text-base leading-relaxed"
+            style={{ color: TOKENS.ink }}
+          >
+            {topic.blurb}
+          </p>
+        ) : null}
+        <p
+          className="text-base leading-relaxed"
+          style={{ color: TOKENS.inkMuted, fontStyle: "italic" }}
+        >
+          Where do you stand? You&rsquo;ll be matched with one person who lands
+          somewhere else.
         </p>
-      </div>
+      </header>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {availableViewpoints.map((vp) => {
-          const Icon = viewpointIcons[vp.id];
-          const isSelected = selected === vp.id;
-          return (
-            <button
-              type="button"
-              key={vp.id}
-              onClick={() => setSelected(vp.id)}
-              className="text-left"
-              aria-pressed={isSelected}
-            >
-              <Card
-                className={cn(
-                  "transition-all hover:border-primary/40 hover:shadow-sm",
-                  isSelected && "border-primary ring-primary/30 ring-2",
-                )}
-              >
-                <CardContent className="flex flex-col gap-3">
-                  <Icon className="text-primary size-5" />
-                  <CardTitle className="text-lg">{vp.name}</CardTitle>
-                  <CardDescription>{vp.description}</CardDescription>
-                </CardContent>
-              </Card>
-            </button>
-          );
-        })}
-      </div>
+      <ul className="grid gap-4 md:grid-cols-2">
+        {availableViewpoints.map((vp) => (
+          <li key={vp.id}>
+            <StanceCard
+              topicId={topic.id}
+              viewpoint={vp}
+              pastel={stancePastel[vp.id]}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-      <div className="flex justify-end">
-        <Button type="submit" size="lg" disabled={!selected}>
-          Find a debate partner
-          <ArrowRight className="size-4" />
-        </Button>
+function StanceCard({
+  topicId,
+  viewpoint,
+  pastel,
+}: {
+  topicId: string;
+  viewpoint: { id: ViewpointId; name: string; description: string };
+  pastel: Pastel;
+}) {
+  const href = `/chat?topic=${encodeURIComponent(topicId)}&viewpoint=${encodeURIComponent(viewpoint.id)}`;
+  return (
+    <Link
+      href={href}
+      className="group block h-full overflow-hidden rounded-xl transition-all hover:-translate-y-0.5"
+      style={{
+        backgroundColor: TOKENS.card,
+        backgroundImage: CARD_GRAIN_URL,
+        backgroundSize: "200px 200px",
+        boxShadow:
+          "0 1px 0 rgba(44,36,24,0.04), 0 12px 28px -16px rgba(76,52,18,0.30)",
+        border: "1px solid rgba(44,36,24,0.08)",
+      }}
+    >
+      <div
+        className="flex items-center gap-2 px-5 py-2.5"
+        style={{
+          backgroundColor: pastel.bg,
+          borderBottom: "1px solid rgba(44,36,24,0.08)",
+        }}
+      >
+        <span
+          className="text-[10px] uppercase tracking-[0.22em]"
+          style={{
+            color: pastel.ink,
+            fontFamily: "var(--font-sans)",
+            fontWeight: 700,
+          }}
+        >
+          {pastel.name}
+        </span>
       </div>
-    </form>
+      <div className="flex flex-col gap-2 px-5 py-5">
+        <h3
+          className="text-2xl"
+          style={{
+            fontFamily: "var(--font-newsreader)",
+            fontWeight: 500,
+            letterSpacing: "-0.012em",
+            lineHeight: 1.18,
+          }}
+        >
+          {viewpoint.name}
+        </h3>
+        <p
+          className="text-sm leading-relaxed"
+          style={{
+            color: TOKENS.inkMuted,
+            fontFamily: "var(--font-newsreader)",
+          }}
+        >
+          {viewpoint.description}
+        </p>
+        <span
+          className="mt-1 inline-flex items-baseline gap-1.5 text-sm transition-transform group-hover:translate-x-0.5"
+          style={{
+            color: TOKENS.accent,
+            fontFamily: "var(--font-newsreader)",
+            fontStyle: "italic",
+          }}
+        >
+          Find someone to talk to →
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+function NoTopicState() {
+  return (
+    <div
+      className="flex max-w-md flex-col items-start gap-3 overflow-hidden rounded-xl px-6 py-6"
+      style={{
+        backgroundColor: TOKENS.card,
+        backgroundImage: CARD_GRAIN_URL,
+        backgroundSize: "200px 200px",
+        boxShadow:
+          "0 1px 0 rgba(44,36,24,0.04), 0 12px 28px -16px rgba(76,52,18,0.30)",
+        border: "1px solid rgba(44,36,24,0.08)",
+      }}
+    >
+      <span
+        className="text-[10px] uppercase tracking-[0.28em]"
+        style={{
+          color: TOKENS.accent,
+          fontFamily: "var(--font-sans)",
+          fontWeight: 700,
+        }}
+      >
+        Nothing selected
+      </span>
+      <h2
+        className="text-2xl"
+        style={{
+          fontFamily: "var(--font-newsreader)",
+          fontWeight: 500,
+          letterSpacing: "-0.012em",
+        }}
+      >
+        No topic chosen yet
+      </h2>
+      <p
+        className="text-sm"
+        style={{ color: TOKENS.inkMuted }}
+      >
+        Head back to the notebook and pick one.
+      </p>
+      <Link
+        href="/"
+        className="mt-2 inline-flex items-center gap-1.5 text-sm transition-transform hover:translate-x-0.5"
+        style={{
+          color: TOKENS.accent,
+          fontStyle: "italic",
+        }}
+      >
+        <ArrowLeft className="size-3.5" />
+        Choose a topic
+      </Link>
+    </div>
   );
 }
