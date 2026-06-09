@@ -17,7 +17,7 @@ RUN apt-get update && \
   libasound2t64=1.2.11-1ubuntu0.2 \
   libxtst6=2:1.2.3-1.1build1 \
   xauth=1:1.1.2-1build1 \
-  xvfb=2:21.1.12-1ubuntu1.5 \
+  xvfb=2:21.1.12-1ubuntu1.6 \
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/*
 
