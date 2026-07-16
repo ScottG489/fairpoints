@@ -34,7 +34,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-$AWSCLI_VERSION.z
 
 ENV HOME=/root
 
-ARG NVM_VERSION=0.40.5
+ARG NVM_VERSION=0.40.6
 ARG NODE_VERSION=24.18.0
 ENV NODE_VERSION=$NODE_VERSION
 ENV NVM_DIR=${HOME}/.nvm
